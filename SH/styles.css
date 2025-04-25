@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    transition: background-color 0.3s ease, filter 0.3s ease;
+    position: relative;
+  }
+  
+  .game-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .game-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .score-container,
+  .next-piece {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .next-piece {
+    text-align: center;
+  }
+  
+  #game-canvas {
+    background-color: white;
+    border: 2px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1;
+  }
+  
+  #next-piece-canvas {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  #pause-button {
+    background-color: #f44336;
+  }
+  
+  #pause-button:hover {
+    background-color: #d32f2f;
+  }
+  
+  @keyframes rainbow-bg {
+    0%   { filter: hue-rotate(0deg) saturate(1); }
+    25%  { filter: hue-rotate(120deg) saturate(2); }
+    50%  { filter: hue-rotate(240deg) saturate(3); }
+    75%  { filter: hue-rotate(360deg) saturate(2); }
+    100% { filter: hue-rotate(480deg) saturate(1); }
+  }
+  body.line-clear-1 {
+    animation: rainbow-bg 1s linear;
+  }
+  
+  @keyframes spin-zoom {
+    0%   { transform: scale(1) rotate(0deg); filter: brightness(1); }
+    50%  { transform: scale(3) rotate(720deg); filter: brightness(2.5); }
+    100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+  }
+  #game-canvas.line-clear-2 {
+    animation: spin-zoom 0.8s ease-in-out;
+  }
+  
+  @keyframes glitch {
+    0%   { clip-path: inset(0 0 0 0); filter: invert(0) hue-rotate(0deg); }
+    20%  { clip-path: inset(10% 0 55% 0); filter: invert(1) hue-rotate(90deg); }
+    40%  { clip-path: inset(58% 0 10% 0); filter: invert(1) hue-rotate(180deg); }
+    60%  { clip-path: inset(30% 0 50% 0); filter: invert(1) hue-rotate(270deg); }
+    80%  { clip-path: inset(5% 0 5% 0); filter: invert(1) hue-rotate(360deg); }
+    100% { clip-path: inset(0 0 0 0); filter: invert(0) hue-rotate(0deg); }
+  }
+  #game-canvas.line-clear-3 {
+    animation: glitch 1s steps(5) both;
+  }
+  
+  @keyframes neon-strobe {
+    0%,100% { box-shadow: none; }
+    25%     { box-shadow: 0 0 20px 10px #0ff, 0 0 40px 20px #f0f; }
+    50%     { box-shadow: 0 0 60px 30px #ff0, 0 0 120px 60px #0f0; }
+    75%     { box-shadow: 0 0 20px 10px #f00, 0 0 40px 20px #00f; }
+  }
+  #game-canvas.line-clear-4 {
+    animation: neon-strobe 0.6s ease-in-out;
+  }
+  
+  @keyframes chaos {
+    0%   { transform: translate(0,0) rotate(0); filter: hue-rotate(0deg) saturate(1); }
+    10%  { transform: translate(-20px,10px) rotate(-5deg); filter: hue-rotate(45deg) saturate(4); }
+    20%  { transform: translate(15px,-15px) rotate(8deg); filter: hue-rotate(90deg) saturate(6); }
+    30%  { transform: translate(-25px,20px) rotate(-10deg); filter: hue-rotate(135deg) saturate(8); }
+    40%  { transform: translate(10px,-20px) rotate(12deg); filter: hue-rotate(180deg) saturate(10); }
+    50%  { transform: translate(-30px,25px) rotate(-15deg); filter: hue-rotate(225deg) saturate(8); }
+    60%  { transform: translate(20px,-10px) rotate(10deg); filter: hue-rotate(270deg) saturate(6); }
+    70%  { transform: translate(-15px,15px) rotate(-8deg); filter: hue-rotate(315deg) saturate(4); }
+    80%  { transform: translate(25px,-5px) rotate(5deg); filter: hue-rotate(360deg) saturate(2); }
+    100% { transform: translate(0,0) rotate(0); filter: none; }
+  }
+  #game-canvas.line-clear-5 {
+    animation: chaos 1.2s ease-in-out;
+  }
+  
+  @keyframes confetti-blast {
+    0%   { box-shadow: none; }
+    100% { box-shadow:
+            0 -200px 0 4px #f00,
+            50px -180px 0 3px #0f0,
+            -50px -160px 0 2px #00f,
+            80px -140px 0 5px #ff0,
+            -80px -120px 0 4px #0ff,
+            120px -100px 0 3px #f0f;
+          transform: translateY(200px);
+    }
+  }
+  #game-canvas.line-clear-6 {
+    animation: confetti-blast 1.2s ease-out forwards;
+  }
+  
+  @keyframes spiral-warp {
+    0%   { transform: scale(1) rotate(0deg) skew(0deg); filter: blur(0); }
+    50%  { transform: scale(0) rotate(1080deg) skew(45deg); filter: blur(5px); }
+    100% { transform: scale(1) rotate(0deg) skew(0deg); filter: blur(0); }
+  }
+  #game-canvas.line-clear-7 {
+    animation: spiral-warp 1s ease-in-out;
+  }
+  
+  @keyframes shred {
+    0%   { clip-path: inset(0% 0% 0% 0%); }
+    25%  { clip-path: inset(20% 0% 60% 0%); transform: skew(20deg); }
+    50%  { clip-path: inset(40% 0% 40% 0%); transform: skew(-20deg); }
+    75%  { clip-path: inset(60% 0% 20% 0%); transform: skew(20deg); }
+    100% { clip-path: inset(0% 0% 0% 0%); transform: skew(0deg); }
+  }
+  #game-canvas.line-clear-8 {
+    animation: shred 0.9s steps(8) both;
+  }
+  
+  @keyframes fractal-glow {
+    0%   { filter: drop-shadow(0 0 0 #f0f) saturate(1); }
+    50%  { filter: drop-shadow(0 0 20px #f0f) saturate(5) blur(2px); }
+    100% { filter: drop-shadow(0 0 0 #f0f) saturate(1); }
+  }
+  #game-canvas.line-clear-9 {
+    animation: fractal-glow 1.4s ease-in-out;
+  }
+  
+  @keyframes particle-burst {
+    0%   { box-shadow: none; opacity: 1; }
+    30%  { box-shadow:
+            0 -50px 0 2px #ff0,
+            30px -30px 0 1px #0ff,
+            -30px -30px 0 3px #f0f; }
+    60%  { box-shadow:
+            0 -100px 0 4px #ff0,
+            60px -60px 0 2px #0ff,
+            -60px -60px 0 6px #f0f;
+          opacity: 0; }
+    100% { box-shadow: none; opacity: 0; }
+  }
+  #game-canvas.line-clear-10 {
+    animation: particle-burst 1s ease-out forwards;
+  }
+  
+  #dino {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 150px;
+    height: auto;
+    display: none;
+    z-index: 999;
+  }
+  
+  @keyframes dino-cheer {
+    0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+    30%  { transform: scale(1.2) rotate(0deg); opacity: 1; }
+    60%  { transform: scale(1) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  
+  body.show-dino #dino {
+    display: block;
+    animation: dino-cheer 1s ease-out;
+  }
+  

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Arcade Tetris</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #000;
+            font-family: 'Press Start 2P', cursive;
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0,0,0,0.3) 1px, transparent 1px) 0 0 / 20px 20px,
+                linear-gradient(rgba(0,0,0,0.3) 1px, transparent 1px) 0 0 / 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            animation: neonPulse 1.5s infinite alternate;
+            margin-left: 20px;
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+            }
+            to {
+                text-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff;
+            }
+        }
+
+        #game-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 4px solid #00ffff;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        #game-board {
+            width: 300px;
+            height: 600px;
+            border: 4px solid #00ffff;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(20, 1fr);
+            background-color: rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 20px #00ffff;
+        }
+
+        .block {
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            transition: all 0.1s ease;
+        }
+
+        .I { background-color: #00ffff; box-shadow: 0 0 10px #00ffff; }
+        .O { background-color: #ffff00; box-shadow: 0 0 10px #ffff00; }
+        .T { background-color: #ff00ff; box-shadow: 0 0 10px #ff00ff; }
+        .S { background-color: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        .Z { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+        .J { background-color: #0000ff; box-shadow: 0 0 10px #0000ff; }
+        .L { background-color: #ffa500; box-shadow: 0 0 10px #ffa500; }
+
+        #score {
+            margin: 20px;
+            font-size: 1.2em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        #controls {
+            margin: 20px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+
+        #controls p {
+            margin: 10px;
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+            font-size: 0.8em;
+        }
+
+        .dinosaur {
+            position: absolute;
+            font-size: 50px;
+            animation: fallDinosaur 3s linear forwards;
+            transform: rotate(45deg);
+            filter: drop-shadow(0 0 10px #ff00ff);
+        }
+
+        @keyframes fallDinosaur {
+            0% {
+                transform: translateY(-100px) translateX(0) rotate(45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh + 100px)) translateX(100px) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        #snow-container {
+            display: none;
+        }
+
+        #scoreboard {
+            position: fixed;
+            right: 20px;
+            top: 80px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 10px #ff00ff;
+            width: 250px;
+            z-index: 1;
+        }
+
+        #scoreboard h2 {
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+            font-size: 1em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #high-scores {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .score-entry {
+            color: #00ffff;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .score-entry span {
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #name-input {
+            display: none;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        #player-name {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            padding: 5px;
+            font-family: 'Press Start 2P', cursive;
+            width: 150px;
+            text-align: center;
+        }
+
+        #submit-score {
+            background: #ff00ff;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            margin-top: 10px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        #submit-score:hover {
+            background: #ff33ff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+
+        .disco-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .disco-ball {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #ccc 10%, #333 60%);
+            border-radius: 50%;
+            position: relative;
+            margin-right: 20px;
+            animation: rotate 10s linear infinite;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .disco-ball::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%),
+                linear-gradient(-45deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%),
+                linear-gradient(90deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%),
+                linear-gradient(0deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%);
+            border-radius: 50%;
+            animation: shine 2s linear infinite;
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 2px;
+            height: 100vh;
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.8) 50%,
+                rgba(255, 255, 255, 0) 100%);
+            transform-origin: top;
+            animation: beam 4s linear infinite;
+        }
+
+        .light-beam:nth-child(1) { transform: rotate(0deg); }
+        .light-beam:nth-child(2) { transform: rotate(45deg); }
+        .light-beam:nth-child(3) { transform: rotate(90deg); }
+        .light-beam:nth-child(4) { transform: rotate(135deg); }
+        .light-beam:nth-child(5) { transform: rotate(180deg); }
+        .light-beam:nth-child(6) { transform: rotate(225deg); }
+        .light-beam:nth-child(7) { transform: rotate(270deg); }
+        .light-beam:nth-child(8) { transform: rotate(315deg); }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes beam {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        #pause-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        #pause-button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        #pause-button.paused {
+            background: #ff00ff;
+            border-color: #ff00ff;
+            color: #fff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+
+        #pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        #pause-text {
+            color: #ff00ff;
+            font-size: 2em;
+            text-shadow: 0 0 10px #ff00ff;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                text-shadow: 0 0 10px #ff00ff;
+            }
+            to {
+                text-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+            }
+        }
+
+        #music-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            z-index: 2;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        #music-button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        #music-button.muted {
+            background: #ff00ff;
+            border-color: #ff00ff;
+            color: #fff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+
+        .tetris-decoration {
+            position: fixed;
+            z-index: 0;
+            opacity: 0.3;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .tetris-piece {
+            width: 60px;
+            height: 60px;
+            position: fixed;
+            z-index: 0;
+            opacity: 0.2;
+            animation: rotate 10s linear infinite;
+        }
+
+        .tetris-piece.I { background-color: #00ffff; }
+        .tetris-piece.O { background-color: #ffff00; }
+        .tetris-piece.T { background-color: #ff00ff; }
+        .tetris-piece.S { background-color: #00ff00; }
+        .tetris-piece.Z { background-color: #ff0000; }
+        .tetris-piece.J { background-color: #0000ff; }
+        .tetris-piece.L { background-color: #ffa500; }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .tetris-border {
+            position: fixed;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .border-top {
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
+        }
+
+        .border-bottom {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
+        }
+
+        .border-left {
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff);
+        }
+
+        .border-right {
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff);
+        }
+    </style>
+</head>
+<body>
+    <div class="tetris-border border-top"></div>
+    <div class="tetris-border border-bottom"></div>
+    <div class="tetris-border border-left"></div>
+    <div class="tetris-border border-right"></div>
+    
+    <!-- Floating Tetris pieces -->
+    <div class="tetris-piece I" style="top: 10%; left: 5%;"></div>
+    <div class="tetris-piece O" style="top: 20%; right: 5%;"></div>
+    <div class="tetris-piece T" style="top: 40%; left: 10%;"></div>
+    <div class="tetris-piece S" style="top: 60%; right: 15%;"></div>
+    <div class="tetris-piece Z" style="top: 80%; left: 20%;"></div>
+    <div class="tetris-piece J" style="top: 30%; right: 25%;"></div>
+    <div class="tetris-piece L" style="top: 70%; left: 30%;"></div>
+    
+    <button id="pause-button">PAUSE</button>
+    <div id="pause-overlay">
+        <div id="pause-text">PAUSED</div>
+    </div>
+    <button id="music-button">MUSIC ON</button>
+    <div class="disco-container">
+        <div class="disco-ball">
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+            <div class="light-beam"></div>
+        </div>
+        <h1>RETRO TETRIS</h1>
+    </div>
+    <div id="scoreboard">
+        <h2>HIGH SCORES</h2>
+        <ul id="high-scores"></ul>
+        <div id="name-input">
+            <input type="text" id="player-name" maxlength="10" placeholder="YOUR NAME">
+            <br>
+            <button id="submit-score">SUBMIT</button>
+        </div>
+    </div>
+    <div id="game-container">
+        <div id="score">Score: 0</div>
+        <div id="game-board"></div>
+        <div id="controls">
+            <p>CONTROLS:</p>
+            <p>← → : MOVE</p>
+            <p>↓ : DROP</p>
+            <p>SPACE : ROTATE</p>
+        </div>
+    </div>
+    <div id="dinosaur-container"></div>
+    <audio id="roar-sound" src="https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3" preload="auto"></audio>
+    <audio id="bg-music" preload="auto" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-arcade-retro-game-over-213.mp3" type="audio/mpeg">
+    </audio>
+    <script src="tetris.js"></script>
+</body>
+</html> 

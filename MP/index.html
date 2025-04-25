@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jungle Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="rain"></div>
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://www.bensound.com/bensound-music/bensound-jazzyfrenchy.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="rainSound" loop preload="auto">
+        <source src="https://www.soundjay.com/nature/sounds/rain-02.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="thudSound" preload="auto">
+        <source src="https://www.soundjay.com/button/sounds/button-09.mp3" type="audio/mpeg">
+    </audio>
+    <div class="content">
+        <div class="game-container">
+            <div id="game-board"></div>
+            <div class="side-panel">
+                <div class="game-info">
+                    <h2>Score: <span id="score">0</span></h2>
+                    <div class="controls">
+                        <p>Controls:</p>
+                        <ul>
+                            <li>← → : Move left/right</li>
+                            <li>↓ : Move down</li>
+                            <li>Space : Rotate</li>
+                        </ul>
+                        <button id="musicToggle" class="music-btn">🔊 Toggle Music</button>
+                        <button id="rainToggle" class="rain-btn">🌧️ Toggle Rain Sound</button>
+                    </div>
+                </div>
+                <div class="high-score-box">
+                    <h2>High Score: <span id="highScore">0</span></h2>
+                </div>
+                <div class="title-box">
+                    <h2>Dinosaur Tetris</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bonusText" class="bonus-text">BONUS!</div>
+
+    <script src="tetris.js"></script>
+</body>
+</html> 
