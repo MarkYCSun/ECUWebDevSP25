@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="stats-container">
+                    <div class="score-container">
+                        <h2>SCORE</h2>
+                        <div class="bonus-multiplier" id="bonus-multiplier">×1.0</div>
+                        <div id="score">0</div>
+                    </div>
+                    <div class="level-container">
+                        <h2>LEVEL</h2>
+                        <div id="level">1</div>
+                    </div>
+                </div>
+                <div class="next-piece-container">
+                    <h2>NEXT</h2>
+                    <div id="next-piece"></div>
+                </div>
+                <button id="sound-toggle" class="sound-btn" title="Toggle Sound">🔊</button>
+            </div>
+            <canvas id="tetris" width="330" height="600"></canvas>
+            <div class="controls">
+                <p>← : Move Left</p>
+                <p>→ : Move Right</p>
+                <p>↓ : Soft Drop</p>
+                <p>SPACE : Rotate</p>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h2>HIGH SCORES</h2>
+            <ul class="leaderboard-list" id="leaderboard-list">
+                <!-- Leaderboard entries will be inserted here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Difficulty Selection Modal -->
+    <div class="modal" id="difficulty-modal">
+        <div class="modal-content">
+            <h2>SELECT DIFFICULTY</h2>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn" data-difficulty="easy">EASY</button>
+                <button class="difficulty-btn" data-difficulty="medium">MEDIUM</button>
+                <button class="difficulty-btn" data-difficulty="hard">HARD</button>
+                <button class="difficulty-btn" data-difficulty="expert">EXPERT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2>GAME OVER</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <input type="text" maxlength="3" class="name-input" id="name-input" placeholder="AAA">
+            <div class="game-over-buttons">
+                <button class="submit-score" id="submit-score">SUBMIT</button>
+                <button class="continue-btn" id="continue-btn">CONTINUE</button>
+                <button class="change-difficulty-btn" id="change-difficulty-btn">CHANGE DIFFICULTY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="bgm" loop preload="auto">
+        <source src="https://assets.codepen.io/21542/Tetris-Theme.mp3" type="audio/mp3">
+    </audio>
+    <audio id="move-sound" src="https://assets.codepen.io/21542/tetris-move.mp3" preload="auto"></audio>
+    <audio id="rotate-sound" src="https://assets.codepen.io/21542/tetris-rotate.mp3" preload="auto"></audio>
+    <audio id="drop-sound" src="https://assets.codepen.io/21542/tetris-drop.mp3" preload="auto"></audio>
+    <audio id="line-clear" src="https://assets.codepen.io/21542/tetris-line.mp3" preload="auto"></audio>
+    <audio id="game-over" src="https://assets.codepen.io/21542/tetris-gameover.mp3" preload="auto"></audio>
+
+    <script src="tetris.js"></script>
+</body>
+</html> 
